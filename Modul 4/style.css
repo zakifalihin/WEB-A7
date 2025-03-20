@@ -1,0 +1,34 @@
+body {
+    overflow-x: hidden;
+}
+
+.navbar {
+    color: white;
+}
+.container-home {
+    width: 100vw;
+    height: 100vh;
+    background-image: url(img/coffee.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.container-home .content {
+    color: white;
+    width: 100%;
+    height: 90%;
+}
+
+.container-home .content {
+    font-size: 70px;
+}
+
+.container-home .content h5 {
+    font-size: 20px;
+}
+
+.footer {
+    height: 10vh;
+    color: white;
+    background-color: #481e14;
+}
