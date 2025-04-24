@@ -1,0 +1,29 @@
+<!--Index HTML-->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Komentar Ulang Tahun</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h3><strong>PHP</strong> Sedang Berulang Tahun</h3>
+    
+    <p id="hasil"></p>
+
+    <input 
+      type="text" 
+      id="komentar" 
+      placeholder="Komentar.." 
+      onkeyup="sedangMengetik()" 
+    />
+    <p id="statusKetik"></p>
+
+    <button onclick="tampilkanKomentar()">Komentar</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
