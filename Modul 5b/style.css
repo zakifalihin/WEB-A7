@@ -1,0 +1,44 @@
+body {
+  background-color: #f6e58d;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  width: 300px;
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.output {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px;
+  margin-bottom: 15px;
+  display: none;
+}
+
+input, button {
+  padding: 5px;
+  margin-top: 10px;
+}
+
+.green {
+  background-color: green;
+  color: white;
+}
+
+.orange {
+  background-color: orange;
+  color: white;
+}
+
+.yellow {
+  background-color: yellow;
+  color: black;
+}
+
+.red {
+  background-color: red;
+  color: white;
+}
