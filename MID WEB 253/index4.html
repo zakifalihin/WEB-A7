@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Profil Mahasiswa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #87ceeb; /* Sky blue like Mario Bros */
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+        .form-container {
+            max-width: 1000px;
+            margin: 3rem auto;
+            padding: 3rem;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+        .form-container:hover {
+            transform: translateY(-5px);
+        }
+        .section-title {
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 0.7rem;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            color: #333;
+            position: relative;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, #007bff, #00d4ff);
+        }
+        .form-label {
+            font-weight: 500;
+            color: #444;
+        }
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0,123,255,0.2);
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #007bff, #00d4ff);
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+        }
+        .accordion-button {
+            background-color: #f8f9fa;
+            font-weight: 500;
+        }
+        .accordion-button:not(.collapsed) {
+            background-color: #e7f1ff;
+            color: #007bff;
+        }
+        /* Mario Bros Background */
+        #background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 200%;
+            height: 100px;
+            background: linear-gradient(to top, #6b4e31, #8b5e3c);
+            animation: scroll 20s linear infinite;
+        }
+        .hills {
+            position: absolute;
+            bottom: 100px;
+            width: 200%;
+            height: 150px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50"><path d="M0 50 L25 20 L50 40 L75 10 L100 50" fill="%2333aa33" /></svg>') repeat-x;
+            background-size: 200px 150px;
+            animation: scroll 25s linear infinite;
+        }
+        .clouds {
+            position: absolute;
+            top: 50px;
+            width: 200%;
+            height: 100px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50"><path d="M10 40 C20 20 40 20 50 40 C60 20 80 20 90 40" fill="%23ffffff" stroke="%23cccccc" stroke-width="2" /></svg>') repeat-x;
+            background-size: 200px 100px;
+            animation: scroll 30s linear infinite;
+        }
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        /* Search Results */
+        .search-results {
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="background">
+        <div class="clouds"></div>
+        <div class="hills"></div>
+        <div class="ground"></div>
+    </div>
+    <div class="form-container">
+        <h1 class="text-center mb-5" style="color: #333; font-weight: 700;">Form Profil Mahasiswa</h1>
+        <form id="studentForm" onsubmit="handleSubmit(event)">
+            <div class="accordion" id="studentFormAccordion">
+                <!-- Bagian 1: Identitas Mahasiswa -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Identitas Mahasiswa
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#studentFormAccordion">
+                        <div class="accordion-body">
+                            <div class="mb-3">
+                                <label for="nim" class="form-label">NPM/NIM</label>
+                                <input type="text" class="form-control" id="nim" name="nim" placeholder="Masukkan NPM/NIM" required onkeypress="if(event.key === 'Enter') searchNim()">
+                            </div>
+                            <div id="searchResults" class="search-results"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian 2: Data Pribadi -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            Data Pribadi
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#studentFormAccordion">
+                        <div class="accordion-body">
+                            <div class="mb-3">
+                                <label for="nik" class="form-label">NIK</label>
+                                <input type="number" class="form-control" id="nik" name="nik" placeholder="Masukkan NIK" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nisn" class="form-label">NISN</label>
+                                <input type="number" class="form-control" id="nisn" name="nisn" placeholder="Masukkan NISN" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nama" class="form-label">Nama Lengkap</label>
+                                <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan Nama Lengkap">
+                            </div>
+                            <div class="mb-3">
+                                <label for="tempatLahir" class="form-label">Tempat Lahir</label>
+                                <input type="text" class="form-control" id="tempatLahir" name="tempatLahir" placeholder="Masukkan Tempat Lahir">
+                            </div>
+                            <div class="mb-3">
+                                <label for="tanggalLahir" class="form-label">Tanggal Lahir (YYYY-MM-DD)</label>
+                                <input type="date" class="form-control" id="tanggalLahir" name="tanggalLahir">
+                            </div>
+                            <div class="mb-3">
+                                <label for="jenisKelamin" class="form-label">Jenis Kelamin</label>
+                                <select class="form-select" id="jenisKelamin" name="jenisKelamin">
+                                    <option value="">Pilih Jenis Kelamin</option>
+                                    <option value="Laki-laki">Laki-laki</option>
+                                    <option value="Perempuan">Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="alamat" class="form-label">Alamat</label>
+                                <textarea class="form-control" id="alamat" name="alamat" placeholder="Masukkan Alamat"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="provinsi" class="form-label">Provinsi</label>
+                                <select class="form-select" id="provinsi" name="provinsi">
+                                    <option value="">Pilih Provinsi</option>
+                                    <!-- Populated by JavaScript -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="kabKota" class="form-label">Kab./Kota</label>
+                                <select class="form-select" id="kabKota" name="kabKota">
+                                    <option value="">Pilih Kab./Kota</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="kecamatan" class="form-label">Kecamatan</label>
+                                <select class="form-select" id="kecamatan" name="kecamatan">
+                                    <option value="">Pilih Kecamatan</option>
+                                    <!-- Static for simplicity -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="kelurahan" class="form-label">Kelurahan/Desa</label>
+                                <input type="text" class="form-control" id="kelurahan" name="kelurahan" placeholder="Masukkan Kelurahan/Desa">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="rt" class="form-label">RT</label>
+                                    <input type="text" class="form-control" id="rt" name="rt" placeholder="Masukkan RT">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="rw" class="form-label">RW</label>
+                                    <input type="text" class="form-control" id="rw" name="rw" placeholder="Masukkan RW">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="kodePos" class="form-label">Kode Pos</label>
+                                <input type="number" class="form-control" id="kodePos" name="kodePos" placeholder="Masukkan Kode Pos">
+                            </div>
+                            <div class="mb-3">
+                                <label for="jenisTinggal" class="form-label">Jenis Tinggal</label>
+                                <select class="form-select" id="jenisTinggal" name="jenisTinggal">
+                                    <option value="">Pilih Jenis Tinggal</option>
+                                    <option value="Sama Orang Tua">Sama Orang Tua</option>
+                                    <option value="Wali">Wali</option>
+                                    <option value="Kost">Kost</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="alatTransportasi" class="form-label">Alat Transportasi</label>
+                                <select class="form-select" id="alatTransportasi" name="alatTransportasi">
+                                    <option value="">Pilih Alat Transportasi</option>
+                                    <option value="Sepeda">Sepeda</option>
+                                    <option value="Motor">Motor</option>
+                                    <option value="Mobil">Mobil</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="golonganDarah" class="form-label">Golongan Darah</label>
+                                <select class="form-select" id="golonganDarah" name="golonganDarah">
+                                    <option value="">Pilih Golongan Darah</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="AB">AB</option>
+                                    <option value="O">O</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="agama" class="form-label">Agama</label>
+                                <select class="form-select" id="agama" name="agama">
+                                    <option value="">Pilih Agama</option>
+                                    <option value="Islam">Islam</option>
+                                    <option value="Kristen">Kristen</option>
+                                    <option value="Katolik">Katolik</option>
+                                    <option value="Hindu">Hindu</option>
+                                    <option value="Buddha">Buddha</option>
+                                    <option value="Konghucu">Konghucu</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian 3: Kontak -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            Kontak
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#studentFormAccordion">
+                        <div class="accordion-body">
+                            <div class="mb-3">
+                                <label for="nomorPonselUtama" class="form-label">Nomor Ponsel Utama</label>
+                                <input type="tel" class="form-control" id="nomorPonselUtama" name="nomorPonselUtama" placeholder="Masukkan Nomor Ponsel Utama">
+                            </div>
+                            <div class="mb-3">
+                                <label for="nomorPonselLain" class="form-label">Nomor Ponsel Lainnya</label>
+                                <input type="tel" class="form-control" id="nomorPonselLain" name="nomorPonselLain" placeholder="Masukkan Nomor Ponsel Lainnya">
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Masukkan Email">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian 4: Data Orang Tua -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                            Data Orang Tua
+                        </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#studentFormAccordion">
+                        <div class="accordion-body">
+                            <h4>Domisili Orang Tua/Wali</h4>
+                            <div class="mb-3">
+                                <label for="alamatOrtu" class="form-label">Alamat</label>
+                                <textarea class="form-control" id="alamatOrtu" name="alamatOrtu" placeholder="Masukkan Alamat Orang Tua/Wali"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="provinsiOrtu" class="form-label">Provinsi</label>
+                                <select class="form-select" id="provinsiOrtu" name="provinsiOrtu">
+                                    <option value="">Pilih Provinsi</option>
+                                    <!-- Populated by JavaScript -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="kabKotaOrtu" class="form-label">Kab./Kota</label>
+                                <select class="form-select" id="kabKotaOrtu" name="kabKotaOrtu">
+                                    <option value="">Pilih Kab./Kota</option>
+                                </select>
+                            </div>
+                            <h4>Data Ayah</h4>
+                            <div class="mb-3">
+                                <label for="nikAyah" class="form-label">NIK Ayah</label>
+                                <input type="number" class="form-control" id="nikAyah" name="nikAyah" placeholder="Masukkan NIK Ayah">
+                            </div>
+                            <div class="mb-3">
+                                <label for="namaAyah" class="form-label">Nama Ayah</label>
+                                <input type="text" class="form-control" id="namaAyah" name="namaAyah" placeholder="Masukkan Nama Ayah">
+                            </div>
+                            <div class="mb-3">
+                                <label for="tanggalLahirAyah" class="form-label">Tanggal Lahir Ayah</label>
+                                <input type="date" class="form-control" id="tanggalLahirAyah" name="tanggalLahirAyah">
+                            </div>
+                            <div class="mb-3">
+                                <label for="pendidikanAyah" class="form-label">Pendidikan Ayah</label>
+                                <select class="form-select" id="pendidikanAyah" name="pendidikanAyah">
+                                    <option value="">Pilih Pendidikan</option>
+                                    <option value="SD">SD</option>
+                                    <option value="SMP">SMP</option>
+                                    <option value="SMA">SMA</option>
+                                    <option value="S1">S1</option>
+                                    <option value="S2">S2</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="pekerjaanAyah" class="form-label">Pekerjaan Ayah</label>
+                                <select class="form-select" id="pekerjaanAyah" name="pekerjaanAyah">
+                                    <option value="">Pilih Pekerjaan</option>
+                                    <option value="PNS">PNS</option>
+                                    <option value="Swasta">Swasta</option>
+                                    <option value="Wirausaha">Wirausaha</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="penghasilanAyah" class="form-label">Penghasilan Ayah</label>
+                                <select class="form-select" id="penghasilanAyah" name="penghasilanAyah">
+                                    <option value="">Pilih Penghasilan</option>
+                                    <option value="<2jt"><2 Juta</option>
+                                    <option value="2-5jt">2-5 Juta</option>
+                                    <option value=">5jt">>5 Juta</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nomorPonselAyah" class="form-label">Nomor Ponsel Ayah</label>
+                                <input type="tel" class="form-control" id="nomorPonselAyah" name="nomorPonselAyah" placeholder="Masukkan Nomor Ponsel Ayah">
+                            </div>
+                            <h4>Data Ibu</h4>
+                            <div class="mb-3">
+                                <label for="nikIbu" class="form-label">NIK Ibu</label>
+                                <input type="number" class="form-control" id="nikIbu" name="nikIbu" placeholder="Masukkan NIK Ibu">
+                            </div>
+                            <div class="mb-3">
+                                <label for="namaIbuOrtu" class="form-label">Nama Ibu</label>
+                                <input type="text" class="form-control" id="namaIbuOrtu" name="namaIbuOrtu" placeholder="Masukkan Nama Ibu">
+                            </div>
+                            <div class="mb-3">
+                                <label for="tanggalLahirIbu" class="form-label">Tanggal Lahir Ibu</label>
+                                <input type="date" class="form-control" id="tanggalLahirIbu" name="tanggalLahirIbu">
+                            </div>
+                            <div class="mb-3">
+                                <label for="pendidikanIbu" class="form-label">Pendidikan Ibu</label>
+                                <select class="form-select" id="pendidikanIbu" name="pendidikanIbu">
+                                    <option value="">Pilih Pendidikan</option>
+                                    <option value="SD">SD</option>
+                                    <option value="SMP">SMP</option>
+                                    <option value="SMA">SMA</option>
+                                    <option value="S1">S1</option>
+                                    <option value="S2">S2</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="pekerjaanIbu" class="form-label">Pekerjaan Ibu</label>
+                                <select class="form-select" id="pekerjaanIbu" name="pekerjaanIbu">
+                                    <option value="">Pilih Pekerjaan</option>
+                                    <option value="Ibu Rumah Tangga">Ibu Rumah Tangga</option>
+                                    <option value="PNS">PNS</option>
+                                    <option value="Swasta">Swasta</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="penghasilanIbu" class="form-label">Penghasilan Ibu</label>
+                                <select class="form-select" id="penghasilanIbu" name="penghasilanIbu">
+                                    <option value="">Pilih Penghasilan</option>
+                                    <option value="<2jt"><2 Juta</option>
+                                    <option value="2-5jt">2-5 Juta</option>
+                                    <option value=">5jt">>5 Juta</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nomorPonselIbu" class="form-label">Nomor Ponsel Ibu</label>
+                                <input type="tel" class="form-control" id="nomorPonselIbu" name="nomorPonselIbu" placeholder="Masukkan Nomor Ponsel Ibu">
+                            </div>
+                            <h4>Data Wali (Opsional)</h4>
+                            <div class="mb-3">
+                                <label for="nikWali" class="form-label">NIK Wali</label>
+                                <input type="number" class="form-control" id="nikWali" name="nikWali" placeholder="Masukkan NIK Wali">
+                            </div>
+                            <div class="mb-3">
+                                <label for="namaWali" class="form-label">Nama Wali</label>
+                                <input type="text" class="form-control" id="namaWali" name="namaWali" placeholder="Masukkan Nama Wali">
+                            </div>
+                            <div class="mb-3">
+                                <label for="tanggalLahirWali" class="form-label">Tanggal Lahir Wali</label>
+                                <input type="date" class="form-control" id="tanggalLahirWali" name="tanggalLahirWali">
+                            </div>
+                            <div class="mb-3">
+                                <label for="pendidikanWali" class="form-label">Pendidikan Wali</label>
+                                <select class="form-select" id="pendidikanWali" name="pendidikanWali">
+                                    <option value="">Pilih Pendidikan</option>
+                                    <option value="SD">SD</option>
+                                    <option value="SMP">SMP</option>
+                                    <option value="SMA">SMA</option>
+                                    <option value="S1">S1</option>
+                                    <option value="S2">S2</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="pekerjaanWali" class="form-label">Pekerjaan Wali</label>
+                                <select class="form-select" id="pekerjaanWali" name="pekerjaanWali">
+                                    <option value="">Pilih Pekerjaan</option>
+                                    <option value="PNS">PNS</option>
+                                    <option value="Swasta">Swasta</option>
+                                    <option value="Wirausaha">Wirausaha</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="penghasilanWali" class="form-label">Penghasilan Wali</label>
+                                <select class="form-select" id="penghasilanWali" name="penghasilanWali">
+                                    <option value="">Pilih Penghasilan</option>
+                                    <option value="<2jt"><2 Juta</option>
+                                    <option value="2-5jt">2-5 Juta</option>
+                                    <option value=">5jt">>5 Juta</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nomorPonselWali" class="form-label">Nomor Ponsel Wali</label>
+                                <input type="tel" class="form-control" id="nomorPonselWali" name="nomorPonselWali" placeholder="Masukkan Nomor Ponsel Wali">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian 5: Data Mahasiswa -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                            Data Mahasiswa
+                        </button>
+                    </h2>
+                    <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#studentFormAccordion">
+                        <div class="accordion-body">
+                            <div class="mb-3">
+                                <label for="nimAkademik" class="form-label">NPM/NIM</label>
+                                <input type="text" class="form-control" id="nimAkademik" name="nimAkademik" placeholder="Masukkan NPM/NIM">
+                            </div>
+                            <div class="mb-3">
+                                <label for="namaMahasiswa" class="form-label">Nama Mahasiswa</label>
+                                <input type="text" class="form-control" id="namaMahasiswa" name="namaMahasiswa" placeholder="Masukkan Nama Mahasiswa">
+                            </div>
+                            <div class="mb-3">
+                                <label for="dosenWali" class="form-label">Nama Dosen Wali/PA</label>
+                                <input type="text" class="form-control" id="dosenWali" name="dosenWali" placeholder="Masukkan Nama Dosen Wali">
+                            </div>
+                            <div class="mb-3">
+                                <label for="kelasAwal" class="form-label">Kelas Awal</label>
+                                <input type="text" class="form-control" id="kelasAwal" name="kelasAwal" placeholder="Masukkan Kelas Awal">
+                            </div>
+                            <div class="mb-3">
+                                <label for="perguruanTinggi" class="form-label">Perguruan Tinggi</label>
+                                <select class="form-select" id="perguruanTinggi" name="perguruanTinggi">
+                                    <option value="">Pilih Perguruan Tinggi</option>
+                                    <option value="Universitas A">Universitas A</option>
+                                    <option value="Universitas B">Universitas B</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fakultas" class="form-label">Fakultas</label>
+                                <select class="form-select" id="fakultas" name="fakultas">
+                                    <option value="">Pilih Fakultas</option>
+                                    <option value="Teknik">Teknik</option>
+                                    <option value="Ekonomi">Ekonomi</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="programStudi" class="form-label">Program Studi</label>
+                                <select class="form-select" id="programStudi" name="programStudi">
+                                    <option value="">Pilih Program Studi</option>
+                                    <option value="Informatika">Informatika</option>
+                                    <option value="Manajemen">Manajemen</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="konsentrasi" class="form-label">Konsentrasi</label>
+                                <select class="form-select" id="konsentrasi" name="konsentrasi">
+                                    <option value="">Pilih Konsentrasi</option>
+                                    <option value="AI">AI</option>
+                                    <option value="Keuangan">Keuangan</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="konsentrasiMinor" class="form-label">Konsentrasi Minor</label>
+                                <select class="form-select" id="konsentrasiMinor" name="konsentrasiMinor">
+                                    <option value="">Pilih Konsentrasi Minor</option>
+                                    <option value="Data Science">Data Science</option>
+                                    <option value="Pemasaran">Pemasaran</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="pilihan" class="form-label">Pilihan</label>
+                                <select class="form-select" id="pilihan" name="pilihan">
+                                    <option value="">Pilih</option>
+                                    <option value="Reguler">Reguler</option>
+                                    <option value="Ekstensi">Ekstensi</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="statusAktif" class="form-label">Status Aktif Mahasiswa</label>
+                                <select class="form-select" id="statusAktif" name="statusAktif">
+                                    <option value="">Pilih Status</option>
+                                    <option value="Aktif">Aktif</option>
+                                    <option value="Cuti">Cuti</option>
+                                    <option value="Lulus">Lulus</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fotoMahasiswa" class="form-label">Foto Mahasiswa</label>
+                                <input type="file" class="form-control" id="fotoMahasiswa" name="fotoMahasiswa" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian 6: Data Pendaftaran -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                            Data Pendaftaran
+                        </button>
+                    </h2>
+                    <div id="collapseSix" class="accordion-collapse collapse" data-bs-parent="#studentFormAccordion">
+                        <div class="accordion-body">
+                            <div class="mb-3">
+                                <label for="nomorTest" class="form-label">Nomor Test</label>
+                                <input type="text" class="form-control" id="nomorTest" name="nomorTest" placeholder="Masukkan Nomor Test">
+                            </div>
+                            <div class="mb-3">
+                                <label for="statusAwalMahasiswa" class="form-label">Status Awal Mahasiswa</label>
+                                <select class="form-select" id="statusAwalMahasiswa" name="statusAwalMahasiswa">
+                                    <option value="">Pilih Status</option>
+                                    <option value="Baru">Baru</option>
+                                    <option value="Transfer">Transfer</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="jalurPendaftaran" class="form-label">Jalur Pendaftaran</label>
+                                <select class="form-select" id="jalurPendaftaran" name="jalurPendaftaran">
+                                    <option value="">Pilih Jalur</option>
+                                    <option value="SNMPTN">SNMPTN</option>
+                                    <option value="SBMPTN">SBMPTN</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="jalurSeleksi" class="form-label">Jalur Seleksi</label>
+                                <select class="form-select" id="jalurSeleksi" name="jalurSeleksi">
+                                    <option value="">Pilih Jalur</option>
+                                    <option value="Tes Tulis">Tes Tulis</option>
+                                    <option value="Prestasi">Prestasi</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tahunMasuk" class="form-label">Tahun Masuk</label>
+                                <select class="form-select" id="tahunMasuk" name="tahunMasuk">
+                                    <option value="">Pilih Tahun</option>
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022">2022</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="awalSemesterMasuk" class="form-label">Awal Semester Masuk (YYYYs)</label>
+                                <input type="text" class="form-control" id="awalSemesterMasuk" name="awalSemesterMasuk" placeholder="Contoh: 20201">
+                            </div>
+                            <div class="mb-3">
+                                <label for="tanggalMasuk" class="form-label">Tanggal Masuk</label>
+                                <input type="date" class="form-control" id="tanggalMasuk" name="tanggalMasuk">
+                            </div>
+                            <div class="mb-3">
+                                <label for="pembiayaanAwal" class="form-label">Pembiayaan Awal</label>
+                                <select class="form-select" id="pembiayaanAwal" name="pembiayaanAwal">
+                                    <option value="">Pilih Pembiayaan</option>
+                                    <option value="Mandiri">Mandiri</option>
+                                    <option value="Beasiswa">Beasiswa</option>
+                                </select>
+                            </div>
+                            <h4>Mahasiswa Transfer</h4>
+                            <div class="mb-3">
+                                <label for="provinsiPtAsal" class="form-label">Provinsi PT Asal</label>
+                                <select class="form-select" id="provinsiPtAsal" name="provinsiPtAsal">
+                                    <option value="">Pilih Provinsi</option>
+                                    <!-- Populated by JavaScript -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="kabKotaPtAsal" class="form-label">Kab./Kota PT Asal</label>
+                                <select class="form-select" id="kabKotaPtAsal" name="kabKotaPtAsal">
+                                    <option value="">Pilih Kab./Kota</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="kodePtAsal" class="form-label">Kode PT Asal</label>
+                                <input type="text" class="form-control" id="kodePtAsal" name="kodePtAsal" placeholder="Masukkan Kode PT Asal">
+                            </div>
+                            <div class="mb-3">
+                                <label for="kodeProdiAsal" class="form-label">Kode Prodi Asal</label>
+                                <input type="text" class="form-control" id="kodeProdiAsal" name="kodeProdiAsal" placeholder="Masukkan Kode Prodi Asal">
+                            </div>
+                            <div class="mb-3">
+                                <label for="jumlahSksDiakui" class="form-label">Jumlah SKS Diakui</label>
+                                <input type="number" class="form-control" id="jumlahSksDiakui" name="jumlahSksDiakui" placeholder="Masukkan Jumlah SKS">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian 7: Data Kelulusan -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+                            Data Kelulusan
+                        </button>
+                    </h2>
+                    <div id="collapseSeven" class="accordion-collapse collapse" data-bs-parent="#studentFormAccordion">
+                        <div class="accordion-body">
+                            <div class="mb-3">
+                                <label for="tanggalLulus" class="form-label">Tanggal Lulus</label>
+                                <input type="date" class="form-control" id="tanggalLulus" name="tanggalLulus">
+                            </div>
+                            <div class="mb-3">
+                                <label for="nomorSkKelulusan" class="form-label">Nomor SK Kelulusan</label>
+                                <input type="text" class="form-control" id="nomorSkKelulusan" name="nomorSkKelulusan" placeholder="Masukkan Nomor SK Kelulusan">
+                            </div>
+                            <div class="mb-3">
+                                <label for="nomorSeriIjazah" class="form-label">Nomor Seri Ijazah</label>
+                                <input type="text" class="form-control" id="nomorSeriIjazah" name="nomorSeriIjazah" placeholder="Masukkan Nomor Seri Ijazah">
+                            </div>
+                            <div class="mb-3">
+                                <label for="tanggalWisuda" class="form-label">Tanggal Wisuda</label>
+                                <input type="date" class="form-control" id="tanggalWisuda" name="tanggalWisuda">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mt-4">Simpan Data</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sample Indonesian provinces and cities (subset for brevity)
+        const indonesiaData = {
+            'Aceh': ['Banda Aceh', 'Langsa', 'Lhokseumawe'],
+            'Sumatera Utara': ['Medan', 'Binjai', 'Pematangsiantar'],
+            'Sumatera Barat': ['Padang', 'Bukittinggi', 'Payakumbuh'],
+            'Jawa Barat': ['Bandung', 'Bogor', 'Bekasi'],
+            'Jawa Tengah': ['Semarang', 'Surakarta', 'Tegal'],
+            'Jawa Timur': ['Surabaya', 'Malang', 'Kediri'],
+            'Bali': ['Denpasar', 'Singaraja'],
+            'Sulawesi Selatan': ['Makassar', 'Parepare', 'Palopo'],
+            'Papua': ['Jayapura', 'Merauke'],
+        };
+    
+        // Populate province dropdowns
+        const provinceSelects = ['provinsi', 'provinsiOrtu', 'provinsiPtAsal'];
+        provinceSelects.forEach(selectId => {
+            const select = document.getElementById(selectId);
+            Object.keys(indonesiaData).forEach(province => {
+                const option = document.createElement('option');
+                option.value = province;
+                option.textContent = province;
+                select.appendChild(option);
+            });
+        });
+    
+        // Populate city dropdowns based on selected province
+        const citySelects = [
+            { provinceId: 'provinsi', cityId: 'kabKota' },
+            { provinceId: 'provinsiOrtu', cityId: 'kabKotaOrtu' },
+            { provinceId: 'provinsiPtAsal', cityId: 'kabKotaPtAsal' }
+        ];
+    
+        citySelects.forEach(({ provinceId, cityId }) => {
+            const provinceSelect = document.getElementById(provinceId);
+            const citySelect = document.getElementById(cityId);
+            
+            provinceSelect.addEventListener('change', () => {
+                citySelect.innerHTML = '<option value="">Pilih Kab./Kota</option>';
+                const selectedProvince = provinceSelect.value;
+                if (indonesiaData[selectedProvince]) {
+                    indonesiaData[selectedProvince].forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city;
+                        option.textContent = city;
+                        citySelect.appendChild(option);
+                    });
+                }
+            });
+        });
+    
+        // Load all student records to search results
+        function loadAllRecords() {
+            const studentRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+            const searchResults = document.getElementById('searchResults');
+            searchResults.innerHTML = ''; // Clear previous results
+            console.log('Loading records:', studentRecords); // Debugging
+            studentRecords.forEach(record => {
+                const resultDiv = document.createElement('div');
+                resultDiv.classList.add('border', 'p-2', 'mb-2', 'rounded');
+                resultDiv.innerHTML = `
+                    <p><strong>NIM:</strong> ${record.nim}</p>
+                    <button class="btn btn-sm btn-primary" onclick="loadRecordToForm('${record.nim}')">Lihat Detail</button>
+                `;
+                searchResults.appendChild(resultDiv);
+            });
+        }
+    
+        // Search NIM and load data if exists
+        function searchNim() {
+            const nimInput = document.getElementById('nim').value.trim();
+            if (!nimInput) {
+                alert('Masukkan NIM terlebih dahulu!');
+                return;
+            }
+    
+            // Save NIM to localStorage
+            localStorage.setItem('lastNim', nimInput);
+    
+            // Check if NIM exists in student records
+            let studentRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+            const existingRecord = studentRecords.find(record => record.nim === nimInput);
+            if (existingRecord) {
+                // Load existing data to form
+                loadRecordToForm(nimInput);
+                alert('Data ditemukan dan dimuat!');
+            } else {
+                // Add new NIM to records
+                studentRecords.push({ nim: nimInput });
+                localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+                loadAllRecords();
+                alert('NIM baru disimpan!');
+            }
+        }
+    
+        // Load specific record to form
+        function loadRecordToForm(nim) {
+            const studentRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+            const record = studentRecords.find(r => r.nim === nim);
+            if (record) {
+                console.log('Loading record to form:', record); // Debugging
+                // Clear form first
+                document.getElementById('studentForm').reset();
+                // Populate all form fields
+                for (const [key, value] of Object.entries(record)) {
+                    const input = document.getElementById(key);
+                    if (input) {
+                        input.value = value;
+                    }
+                }
+            }
+        }
+    
+        // Handle form submission
+        function handleSubmit(event) {
+            event.preventDefault();
+            const form = document.getElementById('studentForm');
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                if (key !== 'fotoMahasiswa') { // Skip file input for storage
+                    data[key] = value;
+                }
+            });
+    
+            // Validation
+            if (data.nik && !/^\d+$/.test(data.nik)) {
+                alert('NIK harus berupa angka!');
+                return;
+            }
+            if (data.nisn && !/^\d+$/.test(data.nisn)) {
+                alert('NISN harus berupa angka!');
+                return;
+            }
+            if (data.kodePos && !/^\d+$/.test(data.kodePos)) {
+                alert('Kode Pos harus berupa angka!');
+                return;
+            }
+            if (!data.nim) {
+                alert('NIM harus diisi!');
+                return;
+            }
+    
+            // Save to student records
+            let studentRecords = JSON.parse(localStorage.getItem('studentRecords')) || [];
+            const existingRecordIndex = studentRecords.findIndex(record => record.nim === data.nim);
+            if (existingRecordIndex >= 0) {
+                studentRecords[existingRecordIndex] = data;
+            } else {
+                studentRecords.push(data);
+            }
+            localStorage.setItem('studentRecords', JSON.stringify(studentRecords));
+            console.log('Saved records:', studentRecords); // Debugging
+    
+            // Save NIM to lastNim
+            localStorage.setItem('lastNim', data.nim);
+    
+            // Update search results
+            loadAllRecords();
+    
+            alert('Data tersimpan!');
+            form.reset();
+            // Reset city dropdowns
+            citySelects.forEach(({ cityId }) => {
+                const citySelect = document.getElementById(cityId);
+                citySelect.innerHTML = '<option value="">Pilih Kab./Kota</option>';
+            });
+        }
+    
+        // Initialize
+        window.onload = () => {
+            // Load last NIM to input
+            const savedNim = localStorage.getItem('lastNim');
+            if (savedNim) {
+                document.getElementById('nim').value = savedNim;
+            }
+            // Load all student records to search results
+            loadAllRecords();
+        };
+    </script>
