@@ -1,0 +1,62 @@
+/* General body styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+}
+
+/* Header Styles */
+.header {
+  background-color: #007bff;
+}
+
+.header .head {
+  padding: 2px 12px;
+  font-size: 20px;
+  color: aliceblue;
+  text-align: center;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+/* Table row hover effect */
+.table tbody tr:hover {
+  background-color: #c4c4c4; /* Hover effect for rows */
+}
+
+/* Status Label Styles */
+.status-belum, .status-selesai {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+
+/* Custom styles for list-group items */
+.list-group-item {
+  border: 1px solid #dee2e6;
+  padding: 0;
+}
+
+.list-group-item a {
+  display: block;
+  padding: 8px 16px;
+  color: #000000;
+  text-decoration: none;
+}
+
+.list-group-item:hover {
+  background-color: #007bff;
+}
+
+.list-group-item:hover a {
+  color: #ffffff;
+}
